@@ -3,7 +3,10 @@ import type {FC} from 'react';
 import {View, Text, Button, Pressable} from 'react-native';
 import {StackActions, useNavigation} from '@react-navigation/native';
 import {dispatch, useSelector} from '../features';
-import {createGetCommentByIdSelector} from '../features/selectors/feed.selector';
+import {
+  createGetCommentByIdSelector,
+  createGetItenVoteSelector,
+} from '../features/selectors/feed.selector';
 import {VotesCount} from './FeedItem';
 import {addDownVote, addUpVote} from '../features/feeds';
 
@@ -15,6 +18,7 @@ type Props = {
 
 const CommentItem: FC<Props> = ({id, postId, setIsReply}) => {
   const comment = useSelector(createGetCommentByIdSelector(id));
+  const type = useSelector(createGetItenVoteSelector(id));
   return (
     <View
       style={[
@@ -32,12 +36,14 @@ const CommentItem: FC<Props> = ({id, postId, setIsReply}) => {
         }}>
         <Button
           title="UP"
+          color={type === 'up' ? 'green' : 'blue'}
           onPress={() => {
             dispatch(addUpVote({id: postId, exists: false, commentId: id}));
           }}
         />
         <VotesCount {...{id}} />
         <Button
+          color={type === 'down' ? 'green' : 'blue'}
           onPress={() => {
             dispatch(addDownVote({id: postId, exists: false, commentId: id}));
           }}

@@ -16,8 +16,8 @@ type FeedState = {
   downVotes: Record<string, number>;
   commentsCounts: Record<string, number>;
   feedIds: string[];
-  userUpVoteIds: Record<string, string[]>;
-  userDownVoteIds: Record<string, string[]>;
+  userUpVoteIds: Record<string, boolean>;
+  userDownVoteIds: Record<string, boolean>;
   userFeedIds: string[];
   comments: Record<string, Comment>;
   commentsIds: Record<string, string[]>;
@@ -60,7 +60,7 @@ const feedSlice = createSlice({
       state,
       action: PayloadAction<{id: string; exists: boolean; commentId?: string}>,
     ) => {
-      const {upVotes, comments} = state;
+      const {upVotes, userUpVoteIds, userDownVoteIds} = state;
       const {id, exists, commentId} = action.payload;
 
       if (!commentId) {
@@ -70,12 +70,17 @@ const feedSlice = createSlice({
       } else {
         upVotes[commentId] = (upVotes[commentId] || 0) + (exists ? 2 : 1);
       }
+      const pId = !!commentId ? commentId : id;
+      if (userDownVoteIds[pId]) {
+        delete userDownVoteIds[pId];
+      }
+      userUpVoteIds[pId] = true;
     },
     addDownVote: (
       state,
       action: PayloadAction<{id: string; exists: boolean; commentId?: string}>,
     ) => {
-      const {upVotes, downVotes, feedPages} = state;
+      const {downVotes, userUpVoteIds, userDownVoteIds} = state;
       const {id, exists, commentId} = action.payload;
       if (!commentId) {
         // TODO: add it in upvotes
@@ -84,6 +89,11 @@ const feedSlice = createSlice({
       } else {
         downVotes[commentId] = (downVotes[commentId] || 0) - (exists ? 2 : 1);
       }
+      const pId = !!commentId ? commentId : id;
+      if (userUpVoteIds[pId]) {
+        delete userUpVoteIds[pId];
+      }
+      userDownVoteIds[pId] = true;
     },
     addComment: (
       state,

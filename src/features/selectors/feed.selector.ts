@@ -26,3 +26,9 @@ export const createGetCommentsIdsSelector =
 export const createGetCommentByIdSelector =
   (id: string) => (state: RootState) =>
     state.feeds.comments[id];
+
+export const createGetItenVoteSelector = (id: string) => (state: RootState) => {
+  if (state.feeds.userUpVoteIds[id]) return 'up';
+  if (state.feeds.userDownVoteIds[id]) return 'down';
+  return undefined;
+};

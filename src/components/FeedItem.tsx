@@ -7,6 +7,7 @@ import {
   createGetDownVotesByIdSelector,
   createGetUpVotesByIdSelector,
   createGetCommentsCountSelector,
+  createGetItenVoteSelector,
 } from '../features/selectors/feed.selector';
 import {addDownVote, addUpVote} from '../features/feeds';
 
@@ -44,6 +45,7 @@ const CommentsCount: FC<Props> = ({id, isDetailsPage}) => {
 
 const Item: FC<Props> = ({id, isDetailsPage}) => {
   const navigation = useNavigation();
+  const type = useSelector(createGetItenVoteSelector(id));
   return (
     <Pressable
       disabled={isDetailsPage}
@@ -60,6 +62,7 @@ const Item: FC<Props> = ({id, isDetailsPage}) => {
         }}>
         <Button
           title="UP"
+          color={type === 'up' ? 'green' : 'blue'}
           onPress={() => {
             dispatch(addUpVote({id, exists: false}));
           }}
@@ -69,6 +72,7 @@ const Item: FC<Props> = ({id, isDetailsPage}) => {
           onPress={() => {
             dispatch(addDownVote({id, exists: false}));
           }}
+          color={type === 'down' ? 'green' : 'blue'}
           title="DOWN"
         />
       </View>
